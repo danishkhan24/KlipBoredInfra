@@ -17,7 +17,7 @@ module "eks" {
   vpc_id          = data.aws_vpc.default.id
 
   # Pass the subnet IDs to the EKS module
-  subnets = data.aws_subnet.default.ids
+  subnets = data.aws_subnet.default
 
   # Fargate profiles configuration
   fargate_profiles = {
