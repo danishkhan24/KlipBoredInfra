@@ -8,21 +8,18 @@ data "aws_subnet_ids" "default" {
   vpc_id = data.aws_vpc.default.id
 }
 
-# Fetch the subnets' details
-data "aws_subnets" "default" {
-  ids = data.aws_subnet_ids.default.ids
-}
-
 # Create an EKS cluster with Fargate profiles
 module "eks" {
   source          = "terraform-aws-modules/eks/aws"
+  version         = "17.1.0"  # Ensure this is a valid version for your needs
   cluster_name    = "my-eks-cluster"
   cluster_version = "1.23"
   vpc_id          = data.aws_vpc.default.id
 
-  # Specify the subnets where the EKS cluster should run
-  subnet_ids = data.aws_subnet_ids.default.ids
+  # Pass the subnet IDs to the EKS module
+  subnets = data.aws_subnet_ids.default.ids
 
+  # Fargate profiles configuration
   fargate_profiles = {
     fargate = {
       name = "fargate-profile"
@@ -36,8 +33,6 @@ module "eks" {
       ]
     }
   }
-
-  manage_aws_auth = true
 }
 
 # Output the EKS cluster endpoint
