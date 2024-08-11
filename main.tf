@@ -1,7 +1,3 @@
-provider "aws" {
-  region = var.region
-}
-
 # Fetch the default VPC
 data "aws_vpc" "default" {
   default = true
