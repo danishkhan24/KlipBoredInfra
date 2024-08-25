@@ -70,7 +70,6 @@ resource "aws_nat_gateway" "eks_nat_gw" {
 
 # Create Elastic IP for NAT Gateway
 resource "aws_eip" "nat_eip" {
-  vpc = true
   tags = {
     Name = "eks-nat-eip"
   }
@@ -175,6 +174,40 @@ resource "aws_eks_cluster" "eks_cluster" {
     aws_iam_role_policy_attachment.eks_service_policy,
   ]
 }
+
+# IAM Role for Fargate Pod Execution
+resource "aws_iam_role" "fargate_pod_execution_role" {
+  name = "eks-fargate-pod-execution-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          Service = "eks-fargate-pods.amazonaws.com"
+        },
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+
+  tags = {
+    Name = "eks-fargate-pod-execution-role"
+  }
+}
+
+# Attach necessary policies to the role
+resource "aws_iam_role_policy_attachment" "eks_fargate_execution_policy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy"
+  role       = aws_iam_role.fargate_pod_execution_role.name
+}
+
+resource "aws_iam_role_policy_attachment" "ecr_read_only_policy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+  role       = aws_iam_role.fargate_pod_execution_role.name
+}
+
 
 # EKS Fargate Profile for Application
 resource "aws_eks_fargate_profile" "frontend_fargate_profile" {
