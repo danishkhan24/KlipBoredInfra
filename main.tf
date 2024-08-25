@@ -2,6 +2,21 @@ provider "aws" {
   region = "eu-west-2"
 }
 
+data "aws_availability_zones" "available" {
+  state = "available"
+}
+
+data "aws_iam_policy_document" "eks_assume_role_policy" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["eks.amazonaws.com"]
+    }
+  }
+}
+
 # Create a new VPC
 resource "aws_vpc" "eks_vpc" {
   cidr_block = "10.0.0.0/16"
