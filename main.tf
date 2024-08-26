@@ -226,9 +226,9 @@ resource "aws_eks_fargate_profile" "frontend_fargate_profile" {
 }
 
 # EKS Fargate Profile for Application
-resource "aws_eks_fargate_profile" "frontend_fargate_profile" {
+resource "aws_eks_fargate_profile" "backend_fargate_profile" {
   cluster_name           = aws_eks_cluster.eks_cluster.name
-  fargate_profile_name   = "frontend-fargate-profile"
+  fargate_profile_name   = "backend_fargate_profile"
   pod_execution_role_arn = aws_iam_role.fargate_pod_execution_role.arn
   subnet_ids             = aws_subnet.private_subnet[*].id
 
