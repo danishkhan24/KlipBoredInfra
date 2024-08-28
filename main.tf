@@ -76,6 +76,22 @@ resource "aws_internet_gateway" "eks_igw" {
 #   }
 # }
 
+resource "aws_vpc_endpoint" "dynamodb" {
+  vpc_id       = aws_vpc.eks_vpc.id
+  service_name = "com.amazonaws.${var.region}.dynamodb"
+  
+  vpc_endpoint_type = "Gateway"  # Specify the Gateway type
+  
+  route_table_ids = [
+    aws_route_table.private_route_table.id
+  ]
+
+  tags = {
+    Name = "dynamodb-endpoint"
+  }
+}
+
+
 # Create Route Tables and Routes
 resource "aws_route_table" "public_route_table" {
   vpc_id = aws_vpc.eks_vpc.id
