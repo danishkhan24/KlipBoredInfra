@@ -60,21 +60,21 @@ resource "aws_internet_gateway" "eks_igw" {
   }
 }
 
-# # Create NAT Gateway
-# resource "aws_nat_gateway" "eks_nat_gw" {
-#   allocation_id = aws_eip.nat_eip.id
-#   subnet_id = aws_subnet.public_subnet[0].id
-#   tags = {
-#     Name = "eks-nat-gw"
-#   }
-# }
+# Create NAT Gateway
+resource "aws_nat_gateway" "eks_nat_gw" {
+  allocation_id = aws_eip.nat_eip.id
+  subnet_id = aws_subnet.public_subnet[0].id
+  tags = {
+    Name = "eks-nat-gw"
+  }
+}
 
-# # Create Elastic IP for NAT Gateway
-# resource "aws_eip" "nat_eip" {
-#   tags = {
-#     Name = "eks-nat-eip"
-#   }
-# }
+# Create Elastic IP for NAT Gateway
+resource "aws_eip" "nat_eip" {
+  tags = {
+    Name = "eks-nat-eip"
+  }
+}
 
 resource "aws_vpc_endpoint" "dynamodb" {
   vpc_id       = aws_vpc.eks_vpc.id
@@ -106,10 +106,10 @@ resource "aws_route_table" "public_route_table" {
 
 resource "aws_route_table" "private_route_table" {
   vpc_id = aws_vpc.eks_vpc.id
-  # route {
-  #   cidr_block = "0.0.0.0/0"
-  #   # nat_gateway_id = aws_nat_gateway.eks_nat_gw.id
-  # }
+  route {
+    cidr_block = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.eks_nat_gw.id
+  }
   tags = {
     Name = "eks-private-rt"
   }
