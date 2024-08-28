@@ -60,6 +60,25 @@ resource "aws_internet_gateway" "eks_igw" {
   }
 }
 
+# Create ECR Docker Endpoint
+resource "aws_vpc_endpoint" "ecr_docker" {
+  vpc_id            = aws_vpc.eks_vpc.id
+  service_name      = "com.amazonaws.${var.region}.ecr.dkr"
+  vpc_endpoint_type = "Interface"
+  subnet_ids        = aws_subnet.private_subnet[*].id
+  security_group_ids = [aws_security_group.eks_security_group.id]
+}
+
+# Create ECR API Endpoint
+resource "aws_vpc_endpoint" "ecr_api" {
+  vpc_id            = aws_vpc.eks_vpc.id
+  service_name      = "com.amazonaws.${var.region}.ecr.api"
+  vpc_endpoint_type = "Interface"
+  subnet_ids        = aws_subnet.private_subnet[*].id
+  security_group_ids = [aws_security_group.eks_security_group.id]
+}
+
+
 # # Create NAT Gateway
 # resource "aws_nat_gateway" "eks_nat_gw" {
 #   allocation_id = aws_eip.nat_eip.id
@@ -76,6 +95,7 @@ resource "aws_internet_gateway" "eks_igw" {
 #   }
 # }
 
+# Create DynamoDB Endpoint
 resource "aws_vpc_endpoint" "dynamodb" {
   vpc_id       = aws_vpc.eks_vpc.id
   service_name = "com.amazonaws.${var.region}.dynamodb"
