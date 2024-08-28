@@ -60,40 +60,21 @@ resource "aws_internet_gateway" "eks_igw" {
   }
 }
 
-# Create ECR Docker Endpoint
-resource "aws_vpc_endpoint" "ecr_docker" {
-  vpc_id            = aws_vpc.eks_vpc.id
-  service_name      = "com.amazonaws.${var.region}.ecr.dkr"
-  vpc_endpoint_type = "Interface"
-  subnet_ids        = aws_subnet.private_subnet[*].id
-  security_group_ids = [aws_security_group.eks_security_group.id]
+# Create NAT Gateway
+resource "aws_nat_gateway" "eks_nat_gw" {
+  allocation_id = aws_eip.nat_eip.id
+  subnet_id = aws_subnet.public_subnet[0].id
+  tags = {
+    Name = "eks-nat-gw"
+  }
 }
 
-# Create ECR API Endpoint
-resource "aws_vpc_endpoint" "ecr_api" {
-  vpc_id            = aws_vpc.eks_vpc.id
-  service_name      = "com.amazonaws.${var.region}.ecr.api"
-  vpc_endpoint_type = "Interface"
-  subnet_ids        = aws_subnet.private_subnet[*].id
-  security_group_ids = [aws_security_group.eks_security_group.id]
+# Create Elastic IP for NAT Gateway
+resource "aws_eip" "nat_eip" {
+  tags = {
+    Name = "eks-nat-eip"
+  }
 }
-
-
-# # Create NAT Gateway
-# resource "aws_nat_gateway" "eks_nat_gw" {
-#   allocation_id = aws_eip.nat_eip.id
-#   subnet_id = aws_subnet.public_subnet[0].id
-#   tags = {
-#     Name = "eks-nat-gw"
-#   }
-# }
-
-# # Create Elastic IP for NAT Gateway
-# resource "aws_eip" "nat_eip" {
-#   tags = {
-#     Name = "eks-nat-eip"
-#   }
-# }
 
 # Create DynamoDB Endpoint
 resource "aws_vpc_endpoint" "dynamodb" {
@@ -126,10 +107,10 @@ resource "aws_route_table" "public_route_table" {
 
 resource "aws_route_table" "private_route_table" {
   vpc_id = aws_vpc.eks_vpc.id
-  # route {
-  #   cidr_block = "0.0.0.0/0"
-  #   nat_gateway_id = aws_nat_gateway.eks_nat_gw.id
-  # }
+  route {
+    cidr_block = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.eks_nat_gw.id
+  }
   tags = {
     Name = "eks-private-rt"
   }
