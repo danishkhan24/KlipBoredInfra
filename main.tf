@@ -60,7 +60,7 @@ resource "aws_internet_gateway" "eks_igw" {
   }
 }
 
-# Create NAT Gateway
+# # Create NAT Gateway
 # resource "aws_nat_gateway" "eks_nat_gw" {
 #   allocation_id = aws_eip.nat_eip.id
 #   subnet_id = aws_subnet.public_subnet[0].id
@@ -69,12 +69,12 @@ resource "aws_internet_gateway" "eks_igw" {
 #   }
 # }
 
-# Create Elastic IP for NAT Gateway
-resource "aws_eip" "nat_eip" {
-  tags = {
-    Name = "eks-nat-eip"
-  }
-}
+# # Create Elastic IP for NAT Gateway
+# resource "aws_eip" "nat_eip" {
+#   tags = {
+#     Name = "eks-nat-eip"
+#   }
+# }
 
 resource "aws_vpc_endpoint" "dynamodb" {
   vpc_id       = aws_vpc.eks_vpc.id
