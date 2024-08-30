@@ -2,24 +2,6 @@ provider "aws" {
   region = "eu-west-2"
 }
 
-provider "kubernetes" {
-  host                   = aws_eks_cluster.eks_cluster.endpoint
-  cluster_ca_certificate = base64decode(aws_eks_cluster.eks_cluster.certificate_authority[0].data)
-  token                  = data.aws_eks_cluster_auth.eks_cluster.token
-}
-
-data "aws_eks_cluster_auth" "your_cluster_auth" {
-  name = data.aws_eks_cluster.eks_cluster.name
-}
-
-provider "helm" {
-  kubernetes {
-    host                   = aws_eks_cluster.eks_cluster.endpoint
-    cluster_ca_certificate = base64decode(aws_eks_cluster.eks_cluster.certificate_authority[0].data)
-    token                  = data.aws_eks_cluster_auth.eks_cluster.token
-  }
-}
-
 resource "helm_release" "prometheus" {
   name       = "prometheus"
   namespace  = "monitoring"
@@ -318,6 +300,24 @@ resource "aws_eks_fargate_profile" "system_fargate_profile" {
 
   selector {
     namespace = "kube-system"
+  }
+}
+
+provider "kubernetes" {
+  host                   = aws_eks_cluster.eks_cluster.endpoint
+  cluster_ca_certificate = base64decode(aws_eks_cluster.eks_cluster.certificate_authority[0].data)
+  token                  = data.aws_eks_cluster_auth.eks_cluster.token
+}
+
+data "aws_eks_cluster_auth" "eks_cluster_auth" {
+  name = data.aws_eks_cluster.eks_cluster.name
+}
+
+provider "helm" {
+  kubernetes {
+    host                   = aws_eks_cluster.eks_cluster.endpoint
+    cluster_ca_certificate = base64decode(aws_eks_cluster.eks_cluster.certificate_authority[0].data)
+    token                  = data.aws_eks_cluster_auth.eks_cluster.token
   }
 }
 
