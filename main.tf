@@ -321,6 +321,23 @@ provider "helm" {
   }
 }
 
+resource "helm_release" "prometheus" {
+  name       = "prometheus"
+  namespace  = "monitoring"
+
+  repository = "https://prometheus-community.github.io/helm-charts"
+  chart      = "kube-prometheus-stack"
+  version    = "51.2.0"
+
+  create_namespace = true
+
+  set {
+    name  = "prometheusOperator.createCustomResource"
+    value = "true"
+  }
+}
+
+
 resource "kubernetes_ingress" "prometheus_ingress" {
   metadata {
     name      = "prometheus-ingress"
