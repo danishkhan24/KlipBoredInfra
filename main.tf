@@ -288,6 +288,21 @@ resource "aws_eks_fargate_profile" "system_fargate_profile" {
   }
 }
 
+# EKS Fargate Profile for Application
+resource "aws_eks_fargate_profile" "monitoring_fargate_profile" {
+  cluster_name           = aws_eks_cluster.eks_cluster.name
+  fargate_profile_name   = "monitoring_fargate_profile"
+  pod_execution_role_arn = aws_iam_role.fargate_pod_execution_role.arn
+  subnet_ids             = aws_subnet.private_subnet[*].id
+
+  selector {
+    namespace = "monitoring"
+    labels = {
+      app = "prometheus"
+    }
+  }
+}
+
 provider "kubernetes" {
   host                   = aws_eks_cluster.eks_cluster.endpoint
   cluster_ca_certificate = base64decode(aws_eks_cluster.eks_cluster.certificate_authority[0].data)
@@ -307,75 +322,75 @@ provider "helm" {
 }
 
 
-resource "helm_release" "prometheus" {
-  name       = "prometheus"
-  namespace  = "monitoring"
+# resource "helm_release" "prometheus" {
+#   name       = "prometheus"
+#   namespace  = "monitoring"
 
-  repository = "https://prometheus-community.github.io/helm-charts"
-  chart      = "kube-prometheus-stack"
-  version    = "51.2.0"
+#   repository = "https://prometheus-community.github.io/helm-charts"
+#   chart      = "kube-prometheus-stack"
+#   version    = "51.2.0"
 
-  create_namespace = true
+#   create_namespace = true
 
-  values = [
-    file("prometheus-values.yaml") # Use this to customize values
-  ]
+#   values = [
+#     file("prometheus-values.yaml") # Use this to customize values
+#   ]
 
-  set {
-    name  = "prometheusOperator.createCustomResource"
-    value = "true"
-  }
-}
+#   set {
+#     name  = "prometheusOperator.createCustomResource"
+#     value = "true"
+#   }
+# }
 
-resource "kubernetes_ingress" "prometheus_ingress" {
-  metadata {
-    name      = "prometheus-ingress"
-    namespace = "monitoring"
-    annotations = {
-      "alb.ingress.kubernetes.io/scheme"          = "internet-facing"
-      "alb.ingress.kubernetes.io/target-type"     = "ip"
-      "kubernetes.io/ingress.class"               = "alb"
-      "alb.ingress.kubernetes.io/listen-ports"    = "[{\"HTTP\": 80}]"
-      "alb.ingress.kubernetes.io/backend-protocol"= "HTTP"
-    }
-  }
+# resource "kubernetes_ingress" "prometheus_ingress" {
+#   metadata {
+#     name      = "prometheus-ingress"
+#     namespace = "monitoring"
+#     annotations = {
+#       "alb.ingress.kubernetes.io/scheme"          = "internet-facing"
+#       "alb.ingress.kubernetes.io/target-type"     = "ip"
+#       "kubernetes.io/ingress.class"               = "alb"
+#       "alb.ingress.kubernetes.io/listen-ports"    = "[{\"HTTP\": 80}]"
+#       "alb.ingress.kubernetes.io/backend-protocol"= "HTTP"
+#     }
+#   }
 
-  spec {
-    rule {
-      host = "prometheus.klipbored.com"
-      http {
-        path {
-          path = "/"
-          backend {
-            service_name = "prometheus-kube-prometheus-sta-prometheus"
-            service_port = 9090
-          }
-        }
-      }
-    }
-  }
-}
+#   spec {
+#     rule {
+#       host = "prometheus.klipbored.com"
+#       http {
+#         path {
+#           path = "/"
+#           backend {
+#             service_name = "prometheus-kube-prometheus-sta-prometheus"
+#             service_port = 9090
+#           }
+#         }
+#       }
+#     }
+#   }
+# }
 
-resource "kubernetes_manifest" "backend_servicemonitor" {
-  depends_on = [helm_release.prometheus]
-  manifest = {
-    apiVersion = "monitoring.coreos.com/v1"
-    kind       = "ServiceMonitor"
-    metadata = {
-      name      = "backend-service-monitor"
-      namespace = "monitoring"
-    }
-    spec = {
-      selector = {
-        matchLabels = {
-          app = "backend"
-        }
-      }
-      endpoints = [{
-        port     = "http"
-        path     = "/metrics"
-        interval = "5s"
-      }]
-    }
-  }
-}
+# resource "kubernetes_manifest" "backend_servicemonitor" {
+#   depends_on = [helm_release.prometheus]
+#   manifest = {
+#     apiVersion = "monitoring.coreos.com/v1"
+#     kind       = "ServiceMonitor"
+#     metadata = {
+#       name      = "backend-service-monitor"
+#       namespace = "monitoring"
+#     }
+#     spec = {
+#       selector = {
+#         matchLabels = {
+#           app = "backend"
+#         }
+#       }
+#       endpoints = [{
+#         port     = "http"
+#         path     = "/metrics"
+#         interval = "5s"
+#       }]
+#     }
+#   }
+# }
