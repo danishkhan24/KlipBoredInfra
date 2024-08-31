@@ -12,11 +12,6 @@ resource "helm_release" "prometheus" {
 
   create_namespace = true
 
-    set {
-    name  = "prometheusOperator.createCustomResource"
-    value = "true"
-  }
-
   values = [
     file("prometheus-values.yaml") # Use this to customize values
   ]
