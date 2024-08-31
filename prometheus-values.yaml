@@ -1,24 +1,16 @@
-prometheusOperator:
-  createCustomResource: true  # Ensures CRDs are managed by Helm
-  createCrd: true
-
 prometheus:
-  prometheusSpec:
-    serviceMonitorSelectorNilUsesHelmValues: false
-    serviceMonitorSelector: {}
-    resources:
-      requests:
-        memory: 500Mi
-        cpu: 200m
-      limits:
-        memory: 2Gi
-        cpu: 1
+  enabled: true
+  nodeExporter:
+    enabled: false
+  kubeProxy:
+    enabled: false
+  coreDns:
+    enabled: false
 
 grafana:
   enabled: true
-  adminPassword: "YourPassword"
 
-nodeExporter:
+alertmanager:
   enabled: true
 
 kubeStateMetrics:
