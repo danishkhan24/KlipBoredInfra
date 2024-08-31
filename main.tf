@@ -322,51 +322,63 @@ provider "helm" {
 resource "helm_release" "prometheus" {
   name       = "prometheus"
   namespace  = "monitoring"
-
-  repository = "https://prometheus-community.github.io/helm-charts"
   chart      = "kube-prometheus-stack"
-  version    = "51.2.0"
-
-  create_namespace = true
-
-  values = [
-    file("prometheus-values.yaml") # Use this to customize values
-  ]
+  repository = "https://prometheus-community.github.io/helm-charts"
 
   set {
-    name  = "prometheusOperator.createCustomResource"
+    name  = "prometheus.nodeExporter.enabled"
+    value = "false"
+  }
+
+  set {
+    name  = "prometheus.kubeProxy.enabled"
+    value = "false"
+  }
+
+  set {
+    name  = "prometheus.coreDns.enabled"
+    value = "false"
+  }
+
+  set {
+    name  = "alertmanager.enabled"
+    value = "false"
+  }
+
+  set {
+    name  = "grafana.enabled"
     value = "true"
   }
 }
 
-resource "kubernetes_ingress" "prometheus_ingress" {
-  metadata {
-    name      = "prometheus-ingress"
-    namespace = "monitoring"
-    annotations = {
-      "alb.ingress.kubernetes.io/scheme"          = "internet-facing"
-      "alb.ingress.kubernetes.io/target-type"     = "ip"
-      "kubernetes.io/ingress.class"               = "alb"
-      "alb.ingress.kubernetes.io/listen-ports"    = "[{\"HTTP\": 80}]"
-      "alb.ingress.kubernetes.io/backend-protocol"= "HTTP"
-    }
-  }
+# resource "kubernetes_ingress" "prometheus_ingress" {
+#   metadata {
+#     name      = "prometheus-ingress"
+#     namespace = "monitoring"
+#     annotations = {
+#       "alb.ingress.kubernetes.io/scheme"          = "internet-facing"
+#       "alb.ingress.kubernetes.io/target-type"     = "ip"
+#       "kubernetes.io/ingress.class"               = "alb"
+#       "alb.ingress.kubernetes.io/listen-ports"    = "[{\"HTTP\": 80}]"
+#       "alb.ingress.kubernetes.io/backend-protocol"= "HTTP"
+#     }
+#   }
 
-  spec {
-    rule {
-      host = "prometheus.klipbored.com"
-      http {
-        path {
-          path = "/"
-          backend {
-            service_name = "prometheus-kube-prometheus-sta-prometheus"
-            service_port = 9090
-          }
-        }
-      }
-    }
-  }
-}
+#   spec {
+#     rule {
+#       host = "prometheus.klipbored.com"
+#       http {
+#         path {
+#           path = "/"
+#           backend {
+#             service_name = "prometheus-kube-prometheus-sta-prometheus"
+#             service_port = 9090
+#           }
+#         }
+#       }
+#     }
+#   }
+# }
 
 resource "kubernetes_manifest" "backend_servicemonitor" {
   depends_on = [helm_release.prometheus]
