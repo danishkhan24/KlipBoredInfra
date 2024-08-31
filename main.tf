@@ -298,7 +298,7 @@ resource "aws_eks_fargate_profile" "monitoring_fargate_profile" {
   selector {
     namespace = "monitoring"
     labels = {
-      app.kubernetes.io/name = "kube-prometheus-stack-prometheus-operator"
+      app = "prometheus"
     }
   }
 }
