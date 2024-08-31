@@ -12,10 +12,16 @@ resource "helm_release" "prometheus" {
 
   create_namespace = true
 
+    set {
+    name  = "prometheusOperator.createCustomResource"
+    value = "true"
+  }
+
   values = [
     file("prometheus-values.yaml") # Use this to customize values
   ]
 }
+
 
 data "aws_availability_zones" "available" {
   state = "available"
@@ -320,23 +326,6 @@ provider "helm" {
     token                  = data.aws_eks_cluster_auth.eks_cluster_auth.token
   }
 }
-
-resource "helm_release" "prometheus" {
-  name       = "prometheus"
-  namespace  = "monitoring"
-
-  repository = "https://prometheus-community.github.io/helm-charts"
-  chart      = "kube-prometheus-stack"
-  version    = "51.2.0"
-
-  create_namespace = true
-
-  set {
-    name  = "prometheusOperator.createCustomResource"
-    value = "true"
-  }
-}
-
 
 resource "kubernetes_ingress" "prometheus_ingress" {
   metadata {
