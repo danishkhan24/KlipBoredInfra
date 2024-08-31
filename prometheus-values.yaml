@@ -1,6 +1,10 @@
 alertmanager:
   enabled: true
 
+prometheusOperator:
+  createCustomResource: true  # Helm manages CRDs
+  createCrd: true  # Ensure CRDs are created
+
 prometheus:
   prometheusSpec:
     serviceMonitorSelectorNilUsesHelmValues: false
