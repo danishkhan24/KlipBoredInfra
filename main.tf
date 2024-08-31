@@ -2,22 +2,6 @@ provider "aws" {
   region = "eu-west-2"
 }
 
-resource "helm_release" "prometheus" {
-  name       = "prometheus"
-  namespace  = "monitoring"
-
-  repository = "https://prometheus-community.github.io/helm-charts"
-  chart      = "kube-prometheus-stack"
-  version    = "51.2.0"
-
-  create_namespace = true
-
-  values = [
-    file("prometheus-values.yaml") # Use this to customize values
-  ]
-}
-
-
 data "aws_availability_zones" "available" {
   state = "available"
 }
@@ -319,6 +303,27 @@ provider "helm" {
     host                   = aws_eks_cluster.eks_cluster.endpoint
     cluster_ca_certificate = base64decode(aws_eks_cluster.eks_cluster.certificate_authority[0].data)
     token                  = data.aws_eks_cluster_auth.eks_cluster_auth.token
+  }
+}
+
+
+resource "helm_release" "prometheus" {
+  name       = "prometheus"
+  namespace  = "monitoring"
+
+  repository = "https://prometheus-community.github.io/helm-charts"
+  chart      = "kube-prometheus-stack"
+  version    = "51.2.0"
+
+  create_namespace = true
+
+  values = [
+    file("prometheus-values.yaml") # Use this to customize values
+  ]
+
+  set {
+    name  = "prometheusOperator.createCustomResource"
+    value = "true"
   }
 }
 
