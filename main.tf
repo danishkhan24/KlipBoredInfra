@@ -352,6 +352,7 @@ resource "kubernetes_ingress" "prometheus_ingress" {
 }
 
 resource "kubernetes_manifest" "backend_servicemonitor" {
+  depends_on = [helm_release.prometheus]
   manifest = {
     apiVersion = "monitoring.coreos.com/v1"
     kind       = "ServiceMonitor"
