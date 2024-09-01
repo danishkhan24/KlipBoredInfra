@@ -1,3 +1,53 @@
+resource "kubernetes_service_account" "prometheus" {
+  metadata {
+    name      = "prometheus"
+    namespace = "default"
+  }
+}
+
+resource "kubernetes_cluster_role" "prometheus" {
+  metadata {
+    name = "prometheus"
+  }
+
+  rule {
+    api_groups = [""]
+    resources  = ["nodes", "services", "endpoints", "pods"]
+    verbs      = ["get", "list", "watch"]
+  }
+
+  rule {
+    api_groups = ["extensions"]
+    resources  = ["ingresses"]
+    verbs      = ["get", "list", "watch"]
+  }
+
+  rule {
+    non_resource_urls = ["/metrics"]
+    verbs             = ["get"]
+  }
+}
+
+resource "kubernetes_cluster_role_binding" "prometheus" {
+  metadata {
+    name = "prometheus"
+  }
+
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = kubernetes_cluster_role.prometheus.metadata[0].name
+  }
+
+  subject {
+    kind      = "ServiceAccount"
+    name      = kubernetes_service_account.prometheus.metadata[0].name
+    namespace = kubernetes_service_account.prometheus.metadata[0].namespace
+  }
+}
+
+
+
 resource "kubernetes_config_map" "prometheus_config" {
   metadata {
     name      = "prometheus-config"
@@ -43,6 +93,8 @@ resource "kubernetes_deployment" "prometheus" {
       }
 
       spec {
+        service_account_name = kubernetes_service_account.prometheus.metadata[0].name
+        
         container {
           name  = "prometheus"
           image = "prom/prometheus:v2.30.3"
