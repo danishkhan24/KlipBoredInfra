@@ -1,7 +1,7 @@
 resource "kubernetes_config_map" "prometheus_config" {
   metadata {
     name      = "prometheus-config"
-    namespace = "monitoring"
+    namespace = "default"
   }
 
   data = {
@@ -19,7 +19,7 @@ EOF
 resource "kubernetes_deployment" "prometheus" {
   metadata {
     name      = "prometheus"
-    namespace = "monitoring"
+    namespace = "default"
   }
 
   spec {

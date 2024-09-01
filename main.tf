@@ -296,7 +296,7 @@ resource "aws_eks_fargate_profile" "monitoring_fargate_profile" {
   subnet_ids             = aws_subnet.private_subnet[*].id
 
   selector {
-    namespace = "monitoring"
+    namespace = "default"
   }
 }
 
@@ -315,13 +315,13 @@ data "aws_eks_cluster_auth" "eks_cluster_auth" {
   name = aws_eks_cluster.eks_cluster.name
 }
 
-provider "helm" {
-  kubernetes {
-    host                   = aws_eks_cluster.eks_cluster.endpoint
-    cluster_ca_certificate = base64decode(aws_eks_cluster.eks_cluster.certificate_authority[0].data)
-    token                  = data.aws_eks_cluster_auth.eks_cluster_auth.token
-  }
-}
+# provider "helm" {
+#   kubernetes {
+#     host                   = aws_eks_cluster.eks_cluster.endpoint
+#     cluster_ca_certificate = base64decode(aws_eks_cluster.eks_cluster.certificate_authority[0].data)
+#     token                  = data.aws_eks_cluster_auth.eks_cluster_auth.token
+#   }
+# }
 
 
 # resource "helm_release" "prometheus" {
