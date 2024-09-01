@@ -73,7 +73,7 @@ resource "kubernetes_deployment" "prometheus" {
 resource "kubernetes_service" "prometheus" {
   metadata {
     name      = "prometheus"
-    namespace = "monitoring"
+    namespace = "default"
   }
 
   spec {
