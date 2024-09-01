@@ -11,7 +11,7 @@ global:
 scrape_configs:
   - job_name: 'backend'
     kubernetes_sd_configs:
-      - role: endpoints
+      - role: service
     relabel_configs:
       - source_labels: [__meta_kubernetes_service_name]
         action: keep
