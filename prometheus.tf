@@ -7,12 +7,11 @@ resource "kubernetes_config_map" "prometheus_config" {
   data = {
     "prometheus.yml" = <<EOF
 global:
-scrape_interval: 5s  # How often to scrape targets
+  scrape_interval: 5s  # How often to scrape targets
 scrape_configs:
-- job_name: 'backend'
+  - job_name: 'backend'
     static_configs:
-    - targets: ['backend.default.svc.cluster.local:5000']
-
+      - targets: ['backend.default.svc.cluster.local:5000']
 web:
   external_url: https://klipbored.com/prometheus
   route_prefix: /prometheus
