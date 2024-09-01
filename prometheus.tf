@@ -10,8 +10,12 @@ global:
   scrape_interval: 5s  # How often to scrape targets
 scrape_configs:
   - job_name: 'backend'
-    static_configs:
-      - targets: ['backend.default.svc.cluster.local:5000']
+    kubernetes_sd_configs:
+      - role: endpoints
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_service_name]
+        action: keep
+        regex: backend-service
 EOF
   }
 }
