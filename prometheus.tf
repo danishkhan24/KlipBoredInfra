@@ -12,9 +12,6 @@ scrape_configs:
   - job_name: 'backend'
     static_configs:
       - targets: ['backend.default.svc.cluster.local:5000']
-web:
-  external_url: https://klipbored.com/prometheus
-  route_prefix: /prometheus
 EOF
   }
 }
