@@ -46,8 +46,6 @@ resource "kubernetes_cluster_role_binding" "prometheus" {
   }
 }
 
-
-
 resource "kubernetes_config_map" "prometheus_config" {
   metadata {
     name      = "prometheus-config"
@@ -94,7 +92,7 @@ resource "kubernetes_deployment" "prometheus" {
 
       spec {
         service_account_name = kubernetes_service_account.prometheus.metadata[0].name
-        
+
         container {
           name  = "prometheus"
           image = "prom/prometheus:v2.30.3"
