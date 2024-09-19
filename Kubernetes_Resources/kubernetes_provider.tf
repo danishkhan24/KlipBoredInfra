@@ -24,3 +24,15 @@ provider "kubernetes" {
 data "aws_eks_cluster_auth" "eks_cluster_auth" {
   name = data.terraform_remote_state.eks.outputs.eks_cluster_name
 }
+
+resource "kubernetes_service_account" "aws_load_balancer_controller_sa" {
+  metadata {
+    name      = "aws-load-balancer-controller"
+    namespace = "kube-system"
+    annotations = {
+      "eks.amazonaws.com/role-arn" = aws_iam_role.eks_alb_role.arn
+    }
+  }
+
+  depends_on = [ data.terraform_remote_state.eks ]
+}

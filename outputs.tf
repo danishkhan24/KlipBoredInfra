@@ -15,3 +15,7 @@ output "eks_cluster_certificate_authority" {
 output "eks_cluster_name" {
   value = aws_eks_cluster.eks_cluster.name
 }
+
+output "region" {
+  value = var.region
+}

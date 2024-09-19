@@ -82,12 +82,14 @@ resource "aws_iam_role" "eks_alb_role" {
   })
 }
 
-resource "kubernetes_service_account" "aws_load_balancer_controller_sa" {
-  metadata {
-    name      = "aws-load-balancer-controller"
-    namespace = "kube-system"
-    annotations = {
-      "eks.amazonaws.com/role-arn" = aws_iam_role.eks_alb_role.arn
-    }
-  }
-}
+# resource "kubernetes_service_account" "aws_load_balancer_controller_sa" {
+#   metadata {
+#     name      = "aws-load-balancer-controller"
+#     namespace = "kube-system"
+#     annotations = {
+#       "eks.amazonaws.com/role-arn" = aws_iam_role.eks_alb_role.arn
+#     }
+#   }
+
+#   depends_on = [ aws_iam_role.eks_alb_role ]
+# }

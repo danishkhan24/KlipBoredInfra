@@ -6,7 +6,7 @@ resource "helm_release" "aws_load_balancer_controller" {
 
   set {
     name  = "clusterName"
-    value = var.cluster_name  # Replace with your EKS cluster name
+    value = data.terraform_remote_state.eks.outputs.eks_cluster_name  # Replace with your EKS cluster name
   }
 
   set {
@@ -16,12 +16,12 @@ resource "helm_release" "aws_load_balancer_controller" {
 
   set {
     name  = "region"
-    value = var.region  # Replace with the AWS region
+    value = data.terraform_remote_state.eks.outputs.region  # Replace with the AWS region
   }
 
   set {
     name  = "vpcId"
-    value = aws_vpc.eks_vpc.id  # Replace with the VPC ID of your EKS cluster
+    value = data.terraform_remote_state.eks.outputs.eks_vpc.id  # Replace with the VPC ID of your EKS cluster
   }
 
   depends_on = [
