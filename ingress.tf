@@ -19,7 +19,6 @@ resource "kubernetes_ingress" "klipbored-ingress" {
       http {
         path {
           path     = "/"
-          path_type = "Prefix"
 
           backend {
             service_name = "frontend-service"
@@ -28,7 +27,6 @@ resource "kubernetes_ingress" "klipbored-ingress" {
         }
         path {
           path     = "/api/"
-          path_type = "Prefix"
 
           backend {
             service_name = "backend-service"
@@ -37,7 +35,6 @@ resource "kubernetes_ingress" "klipbored-ingress" {
         }
         path {
           path     = "/prometheus"
-          path_type = "Prefix"
 
           backend {
             service_name = "prometheus"
