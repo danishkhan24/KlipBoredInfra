@@ -21,6 +21,6 @@ resource "helm_release" "aws_load_balancer_controller" {
 
   set {
     name  = "vpcId"
-    value = data.terraform_remote_state.eks.outputs.eks_vpc.id  # Replace with the VPC ID of your EKS cluster
+    value = data.terraform_remote_state.eks.outputs.vpc_id  # Replace with the VPC ID of your EKS cluster
   }
 }

@@ -1,3 +1,7 @@
+provider "aws" {
+  region = data.terraform_remote_state.eks.outputs.region
+}
+
 data "terraform_remote_state" "eks" {
   backend = "remote"
   config = {
