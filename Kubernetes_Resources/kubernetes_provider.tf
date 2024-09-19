@@ -30,7 +30,7 @@ resource "kubernetes_service_account" "aws_load_balancer_controller_sa" {
     name      = "aws-load-balancer-controller"
     namespace = "kube-system"
     annotations = {
-      "eks.amazonaws.com/role-arn" = aws_iam_role.eks_alb_role.arn
+      "eks.amazonaws.com/role-arn" = data.terraform_remote_state.eks.outputs.eks_alb_role.arn
     }
   }
 

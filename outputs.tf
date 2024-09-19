@@ -19,3 +19,7 @@ output "eks_cluster_name" {
 output "region" {
   value = var.region
 }
+
+output "eks_alb_role" {
+  value = aws_iam_role.eks_alb_role
+}

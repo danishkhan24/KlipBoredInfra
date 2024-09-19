@@ -4,20 +4,15 @@ resource "kubernetes_service_account" "prometheus" {
     namespace = "default"
   }
 
-  depends_on = [
-    aws_eks_cluster.eks_cluster,     # Your EKS cluster resource
-  ]
-
+  depends_on = [ data.terraform_remote_state.eks ]
 }
 
 resource "kubernetes_cluster_role" "prometheus" {
   metadata {
     name = "prometheus"
   }
-  
-  depends_on = [
-    aws_eks_cluster.eks_cluster,     # Your EKS cluster resource
-  ]
+
+  depends_on = [ data.terraform_remote_state.eks ]
 
   rule {
     api_groups = [""]
@@ -42,6 +37,8 @@ resource "kubernetes_cluster_role_binding" "prometheus" {
     name = "prometheus"
   }
 
+  depends_on = [ data.terraform_remote_state.eks ]
+
   role_ref {
     api_group = "rbac.authorization.k8s.io"
     kind      = "ClusterRole"
@@ -54,10 +51,6 @@ resource "kubernetes_cluster_role_binding" "prometheus" {
     namespace = kubernetes_service_account.prometheus.metadata[0].namespace
   }
 
-  depends_on = [
-    aws_eks_cluster.eks_cluster,     # Your EKS cluster resource
-  ]
-
 }
 
 resource "kubernetes_config_map" "prometheus_config" {
@@ -66,9 +59,7 @@ resource "kubernetes_config_map" "prometheus_config" {
     namespace = "default"
   }
 
-  depends_on = [
-    aws_eks_cluster.eks_cluster,     # Your EKS cluster resource
-  ]
+  depends_on = [ data.terraform_remote_state.eks ]
 
   data = {
     "prometheus.yml" = <<EOF
@@ -91,6 +82,8 @@ resource "kubernetes_deployment" "prometheus" {
     name      = "prometheus"
     namespace = "default"
   }
+
+  depends_on = [ data.terraform_remote_state.eks ]
 
   spec {
     replicas = 1
@@ -140,10 +133,6 @@ resource "kubernetes_deployment" "prometheus" {
       }
     }
   }
-
-  depends_on = [
-    aws_eks_cluster.eks_cluster,     # Your EKS cluster resource
-  ]
 }
 
 resource "kubernetes_service" "prometheus" {
@@ -151,6 +140,8 @@ resource "kubernetes_service" "prometheus" {
     name      = "prometheus"
     namespace = "default"
   }
+
+  depends_on = [ data.terraform_remote_state.eks ]
 
   spec {
     selector = {
@@ -164,8 +155,4 @@ resource "kubernetes_service" "prometheus" {
 
     type = "ClusterIP"
   }
-
-  depends_on = [
-    aws_eks_cluster.eks_cluster,     # Your EKS cluster resource
-  ]
 }
