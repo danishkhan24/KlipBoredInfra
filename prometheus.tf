@@ -54,6 +54,10 @@ resource "kubernetes_cluster_role_binding" "prometheus" {
     namespace = kubernetes_service_account.prometheus.metadata[0].namespace
   }
 
+  depends_on = [
+    aws_eks_cluster.eks_cluster,     # Your EKS cluster resource
+  ]
+
 }
 
 resource "kubernetes_config_map" "prometheus_config" {
@@ -136,6 +140,10 @@ resource "kubernetes_deployment" "prometheus" {
       }
     }
   }
+
+  depends_on = [
+    aws_eks_cluster.eks_cluster,     # Your EKS cluster resource
+  ]
 }
 
 resource "kubernetes_service" "prometheus" {
@@ -156,4 +164,8 @@ resource "kubernetes_service" "prometheus" {
 
     type = "ClusterIP"
   }
+
+  depends_on = [
+    aws_eks_cluster.eks_cluster,     # Your EKS cluster resource
+  ]
 }
