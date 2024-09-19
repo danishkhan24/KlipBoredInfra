@@ -1,5 +1,20 @@
+terraform {
+  required_providers {
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "~> 2.10.0"  # Or the latest stable version
+    }
+  }
+}
+
 provider "aws" {
   region = "eu-west-2"
+}
+
+provider "helm" {
+  kubernetes {
+    config_path = "~/.kube/config"  # Adjust this to your kubeconfig path
+  }
 }
 
 provider "kubernetes" {

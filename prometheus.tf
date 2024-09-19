@@ -3,12 +3,21 @@ resource "kubernetes_service_account" "prometheus" {
     name      = "prometheus"
     namespace = "default"
   }
+
+  depends_on = [
+    aws_eks_cluster.eks_cluster,     # Your EKS cluster resource
+  ]
+
 }
 
 resource "kubernetes_cluster_role" "prometheus" {
   metadata {
     name = "prometheus"
   }
+  
+  depends_on = [
+    aws_eks_cluster.eks_cluster,     # Your EKS cluster resource
+  ]
 
   rule {
     api_groups = [""]
@@ -44,6 +53,7 @@ resource "kubernetes_cluster_role_binding" "prometheus" {
     name      = kubernetes_service_account.prometheus.metadata[0].name
     namespace = kubernetes_service_account.prometheus.metadata[0].namespace
   }
+
 }
 
 resource "kubernetes_config_map" "prometheus_config" {
@@ -51,6 +61,10 @@ resource "kubernetes_config_map" "prometheus_config" {
     name      = "prometheus-config"
     namespace = "default"
   }
+
+  depends_on = [
+    aws_eks_cluster.eks_cluster,     # Your EKS cluster resource
+  ]
 
   data = {
     "prometheus.yml" = <<EOF
