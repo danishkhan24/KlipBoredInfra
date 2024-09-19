@@ -19,3 +19,8 @@ provider "kubernetes" {
     command     = "aws"
   }
 }
+
+# Fetch the AWS EKS token for authentication
+data "aws_eks_cluster_auth" "eks_cluster_auth" {
+  name = data.terraform_remote_state.eks.outputs.eks_cluster_name
+}
