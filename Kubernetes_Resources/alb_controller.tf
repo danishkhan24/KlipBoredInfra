@@ -24,5 +24,11 @@ resource "helm_release" "aws_load_balancer_controller" {
     value = data.terraform_remote_state.eks.outputs.vpc_id  # Replace with the VPC ID of your EKS cluster
   }
 
+  # Enable verbose logging
+  set {
+    name  = "logLevel"
+    value = "debug"
+  }
+
   depends_on = [ kubernetes_service_account.aws_load_balancer_controller_sa ]
 }
