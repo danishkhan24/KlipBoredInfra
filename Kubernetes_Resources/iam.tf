@@ -233,7 +233,23 @@ resource "aws_iam_policy" "alb_controller_policy" {
                 "elasticloadbalancing:ModifyRule"
             ],
             "Resource": "*"
-        }
+        },
+        {
+        "Effect": "Allow",
+        "Action": [
+          "iam:CreateServiceLinkedRole",
+          "ec2:Describe*",
+          "elasticloadbalancing:Describe*",
+          "elasticloadbalancing:Create*",
+          "elasticloadbalancing:Delete*",
+          "elasticloadbalancing:Modify*",
+          "elasticloadbalancing:RegisterTargets",
+          "elasticloadbalancing:DeregisterTargets",
+          "elasticloadbalancing:AddTags",
+          "elasticloadbalancing:RemoveTags"
+        ],
+        "Resource": "*"
+      }
     ]
 })
 }
