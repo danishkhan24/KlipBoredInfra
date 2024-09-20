@@ -12,6 +12,11 @@ data "terraform_remote_state" "eks" {
   }
 }
 
+# Fetch the AWS EKS token for authentication
+data "aws_eks_cluster_auth" "eks_cluster_auth" {
+  name = data.terraform_remote_state.eks.outputs.eks_cluster_name
+}
+
 provider "kubernetes" {
   host                   = data.terraform_remote_state.eks.outputs.eks_cluster_endpoint
   cluster_ca_certificate = base64decode(data.terraform_remote_state.eks.outputs.eks_cluster_certificate_authority)
@@ -22,11 +27,6 @@ provider "kubernetes" {
     args        = ["eks", "get-token", "--cluster-name", data.terraform_remote_state.eks.outputs.eks_cluster_name]
     command     = "aws"
   }
-}
-
-# Fetch the AWS EKS token for authentication
-data "aws_eks_cluster_auth" "eks_cluster_auth" {
-  name = data.terraform_remote_state.eks.outputs.eks_cluster_name
 }
 
 resource "kubernetes_service_account" "aws_load_balancer_controller_sa" {

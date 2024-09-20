@@ -44,4 +44,6 @@ resource "kubernetes_ingress" "klipbored-ingress" {
       }
     }
   }
+
+  depends_on = [ kubernetes_service_account.aws_load_balancer_controller_sa ]
 }
