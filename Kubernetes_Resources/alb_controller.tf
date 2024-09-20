@@ -11,6 +11,12 @@ resource "helm_release" "aws_load_balancer_controller" {
 
   set {
     name  = "serviceAccount.create"
+    value = false
+  }
+
+  # Use the existing service account name
+  set {
+    name  = "serviceAccount.name"
     value = kubernetes_service_account.aws_load_balancer_controller_sa.metadata[0].name
   }
 
