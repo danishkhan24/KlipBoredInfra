@@ -42,21 +42,3 @@ provider "helm" {
     }
   }
 }
-
-resource "kubernetes_namespace" "test" {
-  metadata {
-    name = "test-namespace"
-  }
-}
-
-resource "kubernetes_service_account" "aws_load_balancer_controller_sa" {
-  metadata {
-    name      = "aws-load-balancer-controller"
-    namespace = "kube-system"
-    annotations = {
-      "eks.amazonaws.com/role-arn" = data.terraform_remote_state.eks.outputs.eks_alb_role.arn
-    }
-  }
-
-  depends_on = [ data.terraform_remote_state.eks ]
-}
