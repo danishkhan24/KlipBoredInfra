@@ -1,6 +1,6 @@
 resource "aws_iam_openid_connect_provider" "oidc_provider" {
   client_id_list = ["sts.amazonaws.com"]
-  thumbprint_list = ["9e99a48a9960b14926bb7f3b1aa9b42d"] # Can use Amazon's default OIDC thumbprint
+  thumbprint_list = ["9E99A48A9960B14926BB7F3B1AA9B42D9A9A7F8B"] # Can use Amazon's default OIDC thumbprint
   url = data.terraform_remote_state.eks.outputs.eks_cluster.identity[0].oidc[0].issuer
 }
 
