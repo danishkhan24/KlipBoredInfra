@@ -9,3 +9,7 @@ output "eks_cluster_certificate_authority" {
 output "eks_cluster_name" {
   value = data.terraform_remote_state.eks.outputs.eks_cluster_name
 }
+
+output "url" {
+  value = aws_iam_openid_connect_provider.oidc_provider.url
+}
