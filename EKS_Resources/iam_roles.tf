@@ -56,7 +56,13 @@ resource "aws_iam_policy" "alb_controller_policy" {
 
 data "aws_iam_policy_document" "alb_controller_policy" {
   statement {
-    actions   = ["elasticloadbalancing:*", "ec2:Describe*", "acm:ListCertificates", "acm:DescribeCertificate"]
+    actions   = [
+      "elasticloadbalancing:*",
+      "ec2:Describe*",
+      "acm:ListCertificates",
+      "acm:DescribeCertificate",
+      "iam:ListRoles", 
+      "iam:GetRole"]
     resources = ["*"]
   }
 }
@@ -81,15 +87,3 @@ resource "aws_iam_role" "eks_alb_role" {
     ]
   })
 }
-
-# resource "kubernetes_service_account" "aws_load_balancer_controller_sa" {
-#   metadata {
-#     name      = "aws-load-balancer-controller"
-#     namespace = "kube-system"
-#     annotations = {
-#       "eks.amazonaws.com/role-arn" = aws_iam_role.eks_alb_role.arn
-#     }
-#   }
-
-#   depends_on = [ aws_iam_role.eks_alb_role ]
-# }
