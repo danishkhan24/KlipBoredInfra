@@ -53,7 +53,9 @@ resource "aws_iam_policy" "alb_controller_policy" {
           "elasticloadbalancing:DescribeListeners",
           "elasticloadbalancing:RegisterTargets",
           "elasticloadbalancing:DeleteLoadBalancer",
-          "iam:PassRole"
+          "iam:PassRole",
+          "iam:ListRoles",
+          "iam:GetRole"
         ],
         Resource = "*"
       }
@@ -66,25 +68,24 @@ resource "aws_iam_role_policy_attachment" "alb_controller_policy_attach" {
   policy_arn = aws_iam_policy.alb_controller_policy.arn
 }
 
-# Policy for ALB-controller
-resource "aws_iam_policy" "alb_controller_policy" {
-  name        = "alb-ingress-controller"
-  description = "IAM policy for ALB Ingress Controller"
-  policy      = data.aws_iam_policy_document.alb_controller_policy.json
-}
+# resource "aws_iam_policy" "alb_controller_policy" {
+#   name        = "alb-ingress-controller"
+#   description = "IAM policy for ALB Ingress Controller"
+#   policy      = data.aws_iam_policy_document.alb_controller_policy.json
+# }
 
-data "aws_iam_policy_document" "alb_controller_policy" {
-  statement {
-    actions   = [
-      "elasticloadbalancing:*",
-      "ec2:Describe*",
-      "acm:ListCertificates",
-      "acm:DescribeCertificate",
-      "iam:ListRoles", 
-      "iam:GetRole"]
-    resources = ["*"]
-  }
-}
+# data "aws_iam_policy_document" "alb_controller_policy" {
+#   statement {
+#     actions   = [
+#       "elasticloadbalancing:*",
+#       "ec2:Describe*",
+#       "acm:ListCertificates",
+#       "acm:DescribeCertificate",
+#       "iam:ListRoles", 
+#       "iam:GetRole"]
+#     resources = ["*"]
+#   }
+# }
 
 resource "aws_iam_role_policy_attachment" "alb_controller_policy_attachment" {
   role       = aws_iam_role.eks_alb_role.name
