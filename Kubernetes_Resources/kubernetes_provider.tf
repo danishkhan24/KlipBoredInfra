@@ -29,6 +29,12 @@ provider "kubernetes" {
   }
 }
 
+resource "kubernetes_namespace" "test" {
+  metadata {
+    name = "test-namespace"
+  }
+}
+
 resource "kubernetes_service_account" "aws_load_balancer_controller_sa" {
   metadata {
     name      = "aws-load-balancer-controller"
